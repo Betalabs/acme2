@@ -171,16 +171,17 @@ class Order extends AbstractKeyValuable {
 
     /**
      * @param $type
+     * @param \Closure $challengeAuthorization
      * @return bool
-     * @throws Exception\InvalidResponse
-     * @throws Exception\RateLimitReached
-     * @throws Exception\HTTPAuthorizationInvalid
+     * @throws \LE_ACME2\Exception\HTTPAuthorizationInvalid
+     * @throws \LE_ACME2\Exception\InvalidResponse
+     * @throws \LE_ACME2\Exception\RateLimitReached
      */
-    public function authorize($type) {
+    public function authorize($type, \Closure $challengeAuthorization = null) {
 
         /** @var Authorizer\HTTP $authorizer */
         $authorizer = $this->_getAuthorizer($type);
-        $authorizer->progress();
+        $authorizer->progress($challengeAuthorization);
 
         return $authorizer->hasFinished();
     }

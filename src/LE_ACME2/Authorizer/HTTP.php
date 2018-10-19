@@ -41,11 +41,12 @@ class HTTP extends AbstractAuthorizer {
     }
 
     /**
-     * @throws Exception\HTTPAuthorizationInvalid
-     * @throws Exception\InvalidResponse
-     * @throws Exception\RateLimitReached
+     * @param \Closure|null $challengeAuthorization
+     * @throws \LE_ACME2\Exception\HTTPAuthorizationInvalid
+     * @throws \LE_ACME2\Exception\InvalidResponse
+     * @throws \LE_ACME2\Exception\RateLimitReached
      */
-    public function progress() {
+    public function progress(\Closure $challengeAuthorization = null) {
 
         if(!$this->_hasValidAuthorizationResponses())
             return;
@@ -66,7 +67,7 @@ class HTTP extends AbstractAuthorizer {
 
                 $existsNotValidChallenges = true;
 
-                Utilities\Challenge::writeHTTPAuthorizationFile(self::$_directoryPath, $this->_account, $challenge);
+                $this->authorization($challenge, $challengeAuthorization);
                 if(Utilities\Challenge::validateHTTPAuthorizationFile($authorizationResponse->getIdentifier()->value, $this->_account, $challenge)) {
 
                     $request = new Request\Authorization\Start($this->_account, $this->_order, $challenge);
@@ -97,4 +98,22 @@ class HTTP extends AbstractAuthorizer {
 
         $this->_finished = !$existsNotValidChallenges;
     }
+
+    /**
+     * Make authorization file
+     *
+     * @param $challenge
+     * @param \Closure|null $challengeAuthorization
+     */
+    protected function authorization(
+        $challenge,
+        \Closure $challengeAuthorization = null
+    ) {
+        if(is_null($challengeAuthorization)) {
+            Utilities\Challenge::writeHTTPAuthorizationFile(self::$_directoryPath, $this->_account, $challenge);
+        }
+
+        $challengeAuthorization($challenge);
+    }
+
 }
