@@ -39,7 +39,7 @@ abstract class AbstractKeyValuable {
 
         if(!file_exists($this->getKeyDirectoryPath())) {
 
-            mkdir($this->getKeyDirectoryPath());
+            mkdir($this->getKeyDirectoryPath(), 0777, true);
         }
 
         if(!$ignoreIfKeysExist && (file_exists($this->getKeyDirectoryPath() . 'private.pem') ||
