@@ -49,6 +49,8 @@ class Challenge {
         curl_setopt($handle, CURLOPT_URL, $requestURL);
         curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($handle);
 
         $result = !empty($response) && $response == self::buildAuthorizationKey($challenge->token, $digest);
